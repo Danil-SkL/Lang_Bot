@@ -8,8 +8,12 @@ async def db_connect():
     db = sq.connect('Lang.db')
     cur = db.cursor()
 
-    cur.execute('CREATE TABLE IF NOT EXISTS word(title, designation)')
-    cur.execute('CREATE TABLE IF NOT EXISTS word_repetition(title, designation)')
+    cur.execute('''CREATE TABLE IF NOT EXISTS word(id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                title TEXT, designation TEXT)''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS word_repetition(id INTEGER, 
+                title TEXT, designation TEXT)''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS rules(id INT, 
+                title TEXT, designation TEXT)''')
 
     db.commit()
 
@@ -37,12 +41,24 @@ async def get_repetition_words():
 
 
 async def add_in_repetititon(n_word):
-    cur.execute('INSERT INTO word_repetition(title, designation) VALUES(?, ?)', n_word)
+    cur.execute('INSERT INTO word_repetition(id, title, designation) VALUES(?, ?, ?)', n_word)
 
     db.commit()
 
 
 async def del_wrd(word):
-    cur.execute('DELETE FROM word WHERE title=(?, ?)', (str(word[0]), str(word[1])))
+    cur.execute(f'DELETE FROM word WHERE id={word[0]}')
 
     db.commit()
+
+def get_title_prop():
+    rules = cur.execute('SELECT * FROM rules').fetchall()
+
+    if len(rules)>0:
+        return rules
+    else:
+        return "Правил пока нет."
+    
+
+def get_rule(int):
+    return cur.execute(f'SELECT * FROM rules WHERE id = {int}').fetchall()

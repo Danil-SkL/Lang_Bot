@@ -53,7 +53,7 @@ async def cmd_mew_word(call):
 async def cmd_start_word(call):
     global word
     word = await get_ten_words()
-    await call.message.answer(text=f'{word[0]} - {word[1]}, знакомо ли вам это слово?',
+    await call.message.answer(text=f'{word[1]} - {word[2]}, знакомо ли вам это слово?',
                                 reply_markup=yes_or_not())
     await call.message.delete()
 
@@ -83,7 +83,7 @@ async def cmd_new_proposal(call):
 
 @dp.callback_query_handler(text='id_repetition')
 async def cmd_repetition(call):
-    await call.message.answer(text='Здесь вы повторяете пройденные слова',
+    await call.message.answer(text=''''Это ваш словарь, здесь вы повторяете пройденные слова''',
                               reply_markup=repetition_word())
     await call.message.delete()
 
@@ -92,13 +92,37 @@ async def cmd_repetition(call):
 async def cmd_repetition(call):
     rep_wrd = await get_repetition_words()
     if rep_wrd == '0':
-        await call.message.answer(text='Этот список пока пуст.',
+        await call.message.answer(text='Ваш словарь пока пуст.',
                                   reply_markup=continue_repetition())
         await call.message.delete()
     else:
-        await call.message.answer(text=f'{rep_wrd[0]} - {rep_wrd[1]}, помните ли вы это слово?',
+        await call.message.answer(text=f'{rep_wrd[1]} - {rep_wrd[2]}, помните ли вы это слово?',
                                   reply_markup=continue_repetition())
         await call.message.delete()
+
+
+@dp.callback_query_handler(text='id_rules')
+async def cmd_rules(call):
+    await call.message.answer(text='Выберете раздел правила.',
+                              reply_markup=get_rule_menu())
+    await call.message.delete()
+
+
+@dp.callback_query_handler(text='id_basic_rule')
+async def cmd_basic_rule(call):
+    await call.message.answer(text='Выберете правило.',
+                              reply_markup=basic_rule())
+    await call.message.delete()
+
+#Обработчик парвил
+#_________________________
+@dp.callback_query_handler(text='id_rule1')
+async def cmd_rule1(call):
+    rls = get_rule(1)
+    await call.message.answer(text=rls[0][1])
+    await call.message.answer(text=rls[0][2],
+                              reply_markup=rule_menu())
+    await call.message.delete()
 
 
 if __name__=='__main__':
